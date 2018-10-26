@@ -6,14 +6,15 @@ using System.Threading.Tasks;
 
 namespace Grades
 {
-    class GradeBook
+    public class GradeBook
     {
         public GradeBook()
         {
+            _name = "Empty";
             grades = new List<float>();
         }
 
-        public GradeStatistics ComputeStatistics()
+        public virtual GradeStatistics ComputeStatistics()
         {
             GradeStatistics stats = new GradeStatistics();
 
@@ -38,6 +39,33 @@ namespace Grades
             grades.Add(grade);
         }
 
+        public string Name
+        {
+            get
+            {
+                return _name;
+            }
+            set
+            {
+                if (String.IsNullOrEmpty(value) && NameChanged != null)
+                {
+                    throw new ArgumentException("Name cannot be null or empty");
+                }
+                if (_name != value)
+                {
+                    NameChangedEventArgs args = new NameChangedEventArgs();
+                    args.ExistingName = _name;
+                    args.NewName = value;
+                    //this is passsing the gradebook
+                    NameChanged(this, args);
+                }
+                _name = value;
+
+            }
+        }
+        public event NameChangedDelegate NameChanged;
+
+        private string _name;
         public List<float> grades;
     }
 }
